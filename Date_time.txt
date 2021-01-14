@@ -1,3 +1,4 @@
+// Рассчёт високосных лет
 bool is_leap( int year )
 {
    if( year%400 == 0 ) return true ;
@@ -34,4 +35,29 @@ int day_number( int mm, int dd, int yy )
 
     return ndays + dd ; // add the days in the current month
 
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+// outfile.cpp -- writing to a file
+#include <iostream>
+#include <ctime>   // system time
+#include <stdio.h>
+
+const int SIZE_SIMB = 30;
+
+int main()
+{
+using namespace std;
+
+time_t nowtime;  // Системное время
+struct tm *timeinfo;
+
+char name[SIZE_SIMB] = {0}; // 20 var
+
+time(&nowtime);  // Получаем системное время
+timeinfo = localtime(&nowtime); // с компа
+strftime(name, SIZE_SIMB, "%d.%m.%Y_%Hh%Mm%Ss", timeinfo); // add date/time to array char
+
+cout << name << endl;   // Вывод на экран
+return 0;
 }

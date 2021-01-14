@@ -79,4 +79,114 @@ while (i <= n)
     p[i++] = '\0'; // установка остальных символов строки в '\0'
 return p;
 }
+///////////////////////////////////////////////
+int fill_array(double ar[], int limit)
+{
+using namespace std;
+double temp;
+int i;
+for (i = 0; i < limit; i++)
+{
+	cout << "Enter value #" « (i + 1) « ": "; // ввод значения
+	cin >> temp;
+	if (!cin) // неправильный ввод
+	{
+		cin.clear();
+		while (cin.getO != '\n ')
+			continue;
+	cout << "Bad input; input process terminated.\n"; // ввод прекращен
+	break;
+	}
+else if (temp < 0) // сигнал завершения
+break;
+ar[i] =
+temp;
+}
+return i;
+}
+/* Этот код включает выдачу приглашения пользователю на
+ввод. Если пользователь вводит неотрицательное значение, оно 
+записывается в массив. В противном случае цикл прекращается. 
+Если пользователь вводит только правильные значения, то цикл 
+завершается после чтения limit значений. Последнее, что делает 
+цикл — увеличивает і, поэтому после завершения цикла і равно 
+величине, на единицу большей, чем последний индекс массива, 
+т.е. і соответствует количеству введенных элементов. Затем 
+функция возвращает это значение.
+// arrfun3.cpp -- array functions and const */
+#include <iostream>
+const int Max = 5;
+// function prototypes
+int fill_array(double ar[], int limit);
+void show_array(const double ar[], int n);  // don't change data
+void revalue(double r, double ar[], int n);
 
+int main()
+{
+    using namespace std;
+    double properties[Max];
+
+    int size = fill_array(properties, Max);
+    show_array(properties, size);
+    if (size > 0)
+    {
+        cout << "Enter revaluation factor: ";
+        double factor;
+        while (!(cin >> factor))    // bad input
+        {
+            cin.clear();
+            while (cin.get() != '\n')
+                continue;
+           cout << "Bad input; Please enter a number: ";
+        }
+        revalue(factor, properties, size);
+        show_array(properties, size);
+    }
+    cout << "Done.\n";
+    // cin.get();
+    // cin.get();
+    return 0;
+}
+
+int fill_array(double ar[], int limit)
+{
+    using namespace std;
+    double temp;
+    int i;
+    for (i = 0; i < limit; i++)
+    {
+        cout << "Enter value #" << (i + 1) << ": ";
+        cin >> temp;
+        if (!cin)    // bad input
+        {
+            cin.clear();
+            while (cin.get() != '\n')
+                continue;
+           cout << "Bad input; input process terminated.\n";
+           break;
+        }
+        else if (temp < 0)     // signal to terminate
+            break;
+        ar[i] = temp;
+    }
+    return i;
+}
+
+// the following function can use, but not alter,
+// the array whose address is ar
+void show_array(const double ar[], int n)
+{
+    using namespace std;
+    for (int i = 0; i < n; i++)
+    {
+        cout << "Property #" << (i + 1) << ": $";
+        cout << ar[i] << endl;
+    }
+}
+
+// multiplies each element of ar[] by r
+void revalue(double r, double ar[], int n)
+{
+    for (int i = 0; i < n; i++)
+        ar[i] *= r;
+}
