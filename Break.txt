@@ -8,7 +8,7 @@ cin.get(); /* в C++ чтобы окно оставалось открытым �
 пока пользователь не нажмет клавишу;*/
 system("pause"); // тоже что cin.get() но из #include <cstdlib>
 exit(EXIT_FAILURE); // выход из программы с ошибкой <cstdlib>
-
+ 
 // arrfun3.cpp -- array functions and const
 #include <iostream>
 const int Max = 5;

@@ -13,6 +13,9 @@ long long: 9223372036854775807
 Minimum int value = -2147483648
 Bits per byte = 8
 
+/*Форма d.dddE+n означает перемещение десятичной точки на п позиций вправо, 
+а форма d.dddE-n — перемещение десятичной точки на п позиций влево.*/
+
 //* Методы форматирования*//
  // устанавливает флаг, который инструктирует cout отображать true и false вместо 1 и 0:
 std::cout.setf(ios_base::boolalpha);
@@ -48,3 +51,91 @@ ios_base::fmtflags initial; // имя типа данных, необходим�
 initial = os.setf(ios_base::fixed); // сохранение исходного состояния форматирования
 ...
 os.setf(initial); // восстановление исходного состояния форматирования*/
+
+// It's prog defines type name & out him on display
+// this prog releas on vscode under gcc c++11
+#include <iostream>
+#include <string>
+#include <typeinfo>
+
+template <typename T>
+void iquote (const T &p);
+
+int main() {
+using namespace std;
+short a = 100;
+iquote (a);
+int b = 100;
+iquote (b);
+string c = "Hellow";
+iquote (c);
+double d = 777.888;
+iquote (d);
+float e = 777.888;
+iquote (e);
+char f[] = "Hellow";
+iquote (f);
+long g = 30;
+iquote (g);
+long long h = 300;
+iquote (h);
+long double i = 300.333L;
+iquote (i);
+bool j = true;
+cout.setf(ios_base::boolalpha);
+iquote (j);
+cout << "Enter text or number: ";
+auto gt = cin.get();
+//getline(cin, gt);
+//cin.getline(auto gt);
+cout << "entered text have ";
+iquote (gt);
+
+system("pause");
+return 0;
+}
+
+
+template <typename T>
+void iquote (const T &p)
+{
+std::string t = typeid(p).name(); // выясняем имя типа
+std::string type;
+switch (t[0])
+{
+case 's':
+    type = "short";
+    break;
+case 'i':
+    type = "int";
+    break;
+case 'd':
+    type = "double";
+    break;
+case 'f':
+    type = "float";
+    break;
+case 'l':
+    type = "long";
+    break;
+case 'e':
+    type = "long double";
+    break;
+case 'x':
+    type = "long long";
+    break;
+case 'b':
+    type = "bool";
+    break;
+case 'N':
+    type = "string";
+    break;
+case 'A':
+    type = "char";
+    break;
+default: type = "unknown";
+    break;
+}
+std::cout << "type " << type << ":\t\t"      // отправляем имя типа
+          << "\"" << p << "\"" << std::endl; // Вывод на экран значения
+}

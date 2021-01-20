@@ -34,7 +34,6 @@ int day_number( int mm, int dd, int yy )
     for( int month = 1 ; month < mm ; ++month ) ndays += days_in_month( month, yy ) ;
 
     return ndays + dd ; // add the days in the current month
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -42,6 +41,7 @@ int day_number( int mm, int dd, int yy )
 #include <iostream>
 #include <ctime>   // system time
 #include <stdio.h>
+#include <cstdlib>
 
 const int SIZE_SIMB = 30;
 
@@ -49,15 +49,21 @@ int main()
 {
 using namespace std;
 
-time_t nowtime;  // Системное время
+time_t nowtime;	// Системное время
 struct tm *timeinfo;
 
 char name[SIZE_SIMB] = {0}; // 20 var
 
-time(&nowtime);  // Получаем системное время
-timeinfo = localtime(&nowtime); // с компа
+time(&nowtime);	// Получаем системное время
+timeinfo = localtime(&nowtime);	// с компа
 strftime(name, SIZE_SIMB, "%d.%m.%Y_%Hh%Mm%Ss", timeinfo); // add date/time to array char
+cout << "localtime:\t" << name << endl;   // Вывод на экран
 
-cout << name << endl;   // Вывод на экран
+time(&nowtime);  // Получаем системное время
+timeinfo = gmtime(&nowtime);	// gmt
+strftime(name, SIZE_SIMB, "%d.%m.%Y_%Hh%Mm%Ss", timeinfo); // add date/time to array char
+cout << "gmtime:\t\t" << name << endl;   // Вывод на экран
+
+system("pause");
 return 0;
 }

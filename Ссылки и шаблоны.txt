@@ -689,7 +689,7 @@ auto h(int x, float у) -> double
 /*Комбинируя новый синтаксис с decltype, указать возвращаемый тип для функции
 gt() можно так: */
 template<class T1, class T2>
-auto gt(Tl х, Т2 у) -> decltype (х + у)
+auto gt(T1 х, Т2 у) -> decltype (х + у)
 {
 	return х + у;
 }
