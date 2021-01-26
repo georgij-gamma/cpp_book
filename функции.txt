@@ -30,3 +30,25 @@ T max (const T &a, const T &b)
     
 }
 //////////////////////////////////////////////
+
+// Unicode
+#include <iostream>
+#include <windows.h>
+
+template <class TYPE>
+void PrintTwice(TYPE data);
+
+int main(int argc, char* argv[])
+{   
+    SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
+    SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
+    PrintTwice(5);
+    //system("pause");
+    return 0;
+}
+
+template <class TYPE>
+void PrintTwice(TYPE data)
+{
+    std::cout << "Удвоенное значение: " << data * 2 << std::endl;
+}

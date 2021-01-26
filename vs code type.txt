@@ -115,6 +115,9 @@ os.setf(initial); // восстановление исходного состо�
 template <typename T>
 void iquote (const T &p);
 
+template <typename T>
+T getT (const T &);
+
 int main() {
 using namespace std;
 short a = 100;
@@ -138,17 +141,25 @@ iquote (i);
 bool j = true;
 cout.setf(ios_base::boolalpha);
 iquote (j);
-cout << "Enter text or number: ";
-auto gt = cin.get();
-//getline(cin, gt);
-//cin.getline(auto gt);
+auto gt = getT(1.1);
 cout << "entered text have ";
 iquote (gt);
-
+//getT();
 system("pause");
 return 0;
 }
 
+template <typename T>
+T getT (const T &)
+{
+    using namespace std;
+    cout << "Enter text or number: ";
+    auto t = T();   // инизиализируем auto неопределённостью
+    cin >> t;
+    cout << "entered text have ";
+    iquote (t); 
+    return t;
+}
 
 template <typename T>
 void iquote (const T &p)
