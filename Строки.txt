@@ -19,7 +19,7 @@ char *p = new char[n+l];
 хранения строки.
 Если время, затраченное на вызов функции strlen() неприемлемо, можно позволить 
 непосредственно выбрать меньшее из значений n и длины строки. Приведенный ниже 
-цикл завершается, когда m достигает значения п или длины строки, что бы ни 
+цикл завершается, когда m достигает значения n или длины строки, что бы ни 
 случилось первым: */
 int m = 0;
 while ( m <= n && str[m] != '\0')
@@ -118,7 +118,7 @@ return i;
 const int Max = 5;
 // function prototypes
 int fill_array(double ar[], int limit);
-void show_array(const double ar[], int n);  // don't change data
+void show_array(const double ar[], int n);  // const - не изменять данные
 void revalue(double r, double ar[], int n);
 
 int main()
@@ -130,14 +130,14 @@ int main()
     show_array(properties, size);
     if (size > 0)
     {
-        cout << "Enter revaluation factor: ";
+        cout << "Enter revaluation factor: "; // ввод коэффициента переоценки
         double factor;
-        while (!(cin >> factor))    // bad input
+        while (!(cin >> factor))    // неправильный ввод
         {
             cin.clear();
             while (cin.get() != '\n')
                 continue;
-           cout << "Bad input; Please enter a number: ";
+           cout << "Bad input; Please enter a number: "; // повторный запрос на ввод числа
         }
         revalue(factor, properties, size);
         show_array(properties, size);
@@ -155,36 +155,33 @@ int fill_array(double ar[], int limit)
     int i;
     for (i = 0; i < limit; i++)
     {
-        cout << "Enter value #" << (i + 1) << ": ";
+        cout << "Enter value #" << (i + 1) << ": "; // ввод значения
         cin >> temp;
-        if (!cin)    // bad input
+        if (!cin)    // неправильный ввод
         {
             cin.clear();
             while (cin.get() != '\n')
                 continue;
-           cout << "Bad input; input process terminated.\n";
+           cout << "Bad input; input process terminated.\n"; // процесс ввода прекращен
            break;
         }
-        else if (temp < 0)     // signal to terminate
+        else if (temp < 0)     // сигнал завершения
             break;
         ar[i] = temp;
     }
     return i;
 }
-
-// the following function can use, but not alter,
-// the array whose address is ar
+// Следующая функция может использовать, но не изменять, массив по адресу ar
 void show_array(const double ar[], int n)
 {
     using namespace std;
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++) // Вывод содержимого массива ar
     {
         cout << "Property #" << (i + 1) << ": $";
         cout << ar[i] << endl;
     }
 }
-
-// multiplies each element of ar[] by r
+// Умножает на r каждый элемент ar[]
 void revalue(double r, double ar[], int n)
 {
     for (int i = 0; i < n; i++)
