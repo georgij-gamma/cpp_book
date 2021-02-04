@@ -78,7 +78,7 @@ std::cout.setf(ios_base::boolalpha);
  // отображать шесть цифр справа от десятичной точки:
 std::cout.setf(ios_base::fixed, ios_base::floatfield); 
 
-std::cout.precision(3); // оператор заставляет cout выводить три десятичных знака после точки
+std::cout.precision(3); // cout выводит три десятичных знака после точки
 std::streamsize prec = std::cout.precision(3); // сохранение предыдущего значения точности
 std::cout.precision(prec); // восстановление предыдущего значения
 
