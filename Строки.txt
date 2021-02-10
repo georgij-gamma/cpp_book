@@ -203,29 +203,47 @@ int main()
     char next;
 
     cout << "Enter a line:\n";
-	/*метод ввода cin .
+	/* метод ввода cin.
 get (input, ArSize) читает до конца экранной
 строки или до позиции ArSize-1, в зависимости от того, что случится раньше.
 Символ новой строки остается во входной очереди. Программа использует метод
-cin.get (next) для чтения символа, который следует после введенной строки. Если
+cin.get(next) для чтения символа, который следует после введенной строки. Если
 next является символом новой строки, значит, предыдущий вызов cin.get (input,
 ArSize) должен был прочитать целиком всю строку. Если next не является символом
 новой строки, в строке ввода остались непрочитанные символы. Затем в программе
 с помощью цикла отбрасывается оставшаяся часть строки, но код можно изменить
 так, чтобы остаток строки был задействован в следующем цикле ввода. Кроме того,
 в программе используется тот факт, что попытка чтения пустой строки с помощью
-get (char *, int) приводит к тому, что сіп возвращает false: */
-    cin.get(input, ArSize);
-    while (cin)
-    {
-        cin.get(next);
-        while (next != '\n')    // string didn't fit!
-            cin.get(next);      // dispose of remainder
-        strcount(input);
-        cout << "Enter next line (empty line to quit):\n";
-        cin.get(input, ArSize);
-    }
-    cout << "Bye\n";
+get(char *, int) приводит к тому, что сіn возвращает false: */
+char input[ArSize];
+char next;
+cout << "Enter a line: \n";
+cin.get(input, ArSize);
+while (cin)
+{
+    cin.get(next);
+    while (next != '\n')    // строка не помещается!
+        cin.get(next);      // избавиться от остатка
+    strcount(input);
+    cout << "Enter next line (empty line to quit):\n";
+	cin.get(input, ArSize);
+	}
+cout << "Bye\n";
+void strcount(const char *str)
+{
+	using namespace std;
+	static int total = 0; // статическая локальная переменная: при следующем
+// входе в эту функцию не будет инициализирована нулём, а примет 
+// релультат, полученный при предыдущем входе в эту функцию
+	int count = 0; // автоматическая локальная переменная, всегда 
+// инициализируется нулём
+	cout << "V" << str <<"\" contains ";
+	while (*str++) // переход к концу строки
+		count++;
+	total += count; // здесь статическая переменная обновляется
+	cout << count << " characters\n";
+	cout << total << " characters total\n";
+}
 // code to keep window open for MSVC++
 /*
 cin.clear();
@@ -236,16 +254,22 @@ cin.clear();
     return 0;
 }
 
-void strcount(const char * str)
+/* Если статическая локальная переменная инициализируется, это делается 
+только один раз при запуске программы. Последующие вызовы функции не 
+будут приводить к повторной инициализации переменной, как это происходит 
+в случае автоматических переменных. */
+void strcount(const char *str)
 {
-    using namespace std;
-    static int total = 0;        // static local variable
-    int count = 0;               // automatic local variable
-
-    cout << "\"" << str <<"\" contains ";
-    while (*str++)               // go to end of string
-        count++;
-    total += count;
-    cout << count << " characters\n";
-    cout << total << " characters total\n";
+	using namespace std;
+	static int total = 0; // статическая локальная переменная: при следующем
+// входе в эту функцию не будет инициализирована нулём, а примет 
+// релультат, полученный при предыдущем входе в эту функцию
+	int count = 0; // автоматическая локальная переменная, всегда 
+// инициализируется нулём
+	cout << "V" << str <<"\" contains ";
+	while (*str++) // переход к концу строки
+		count++;
+	total += count; // здесь статическая переменная обновляется
+	cout << count << " characters\n";
+	cout << total << " characters total\n";
 }
