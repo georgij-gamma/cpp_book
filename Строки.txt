@@ -192,8 +192,8 @@ void revalue(double r, double ar[], int n)
 #include <iostream>
 // constants
 const int ArSize = 10;
-
-// function prototype
+//////////////////////////////////////////////////////////////////////////
+// Способ проверки пустой строки массива char *
 void strcount(const char * str);
 
 int main()
@@ -203,7 +203,7 @@ int main()
     char next;
 
     cout << "Enter a line:\n";
-	/* метод ввода cin.
+	/* Метод ввода cin.
 get (input, ArSize) читает до конца экранной
 строки или до позиции ArSize-1, в зависимости от того, что случится раньше.
 Символ новой строки остается во входной очереди. Программа использует метод
@@ -273,3 +273,4 @@ void strcount(const char *str)
 	cout << count << " characters\n";
 	cout << total << " characters total\n";
 }
+
