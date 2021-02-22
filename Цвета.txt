@@ -43,7 +43,7 @@ enum ConsoleColor
         Magenta       = 5,
         Brown         = 6,
         LightGray     = 7,
-       &nbsp;DarkGray      = 8,
+       &nbsp;DarkGray = 8,
         LightBlue     = 9,
         LightGreen    = 10,
         LightCyan     = 11,
@@ -87,7 +87,7 @@ foreground = 1111;
 (WORD) 1001 1111 = 0000 0000 1001 1111 // (в big-endian)
 1001 1111 0000 0000 // (в little-endian).
 ///////////////////////////////////////////////////////////
-// FOR LINUX:
+//////////////////////// FOR LINUX: ///////////////////////
 #ifndef _COLORMODE_H_
 #define _COLORMODE_H_
 #include <ostream>

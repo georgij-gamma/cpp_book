@@ -57,7 +57,7 @@ while (code >= red && code <= indigo)
 		case violet : cout << "Her eyes were violet.\n"; break;
 		case indigo : cout << "Her mood was indigo.\n"; break;
 		}
-cout << "Enter color code (0-6) : ";
+cout << "Enter color code (0-6): ";
 cin >> code;
 }
 /*	Перечисления с областью видимости не поддерживают неявных преобразований 
