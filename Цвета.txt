@@ -18,7 +18,7 @@ cout << "TEXT";
 ///////////////////////////////////////////////////////////
 
 #include <iostream.h>
-#include "stdafx.h"		// для hStdOut
+#include "stdafx.h"
 #include <windows.h>
  
 void main()
@@ -31,7 +31,7 @@ void main()
 ///////////////////////////////////////////////////////////
 
 #include <iostream.h>
-#include "stdafx.h"		// для hStdOut
+#include "stdafx.h"
 #include <windows.h>
 enum ConsoleColor
 {
@@ -43,7 +43,7 @@ enum ConsoleColor
         Magenta       = 5,
         Brown         = 6,
         LightGray     = 7,
-       &nbsp;DarkGray = 8,
+		DarkGray 	  = 8,
         LightBlue     = 9,
         LightGreen    = 10,
         LightCyan     = 11,
