@@ -400,7 +400,7 @@ int _tmain (int argc, _TCHAR* argv [])
     vector<MyMessage> common;
     // create pool of messages for 3 users:
     for (int user = 0; user < 3; user++)
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 10; i++)
         {
             strstream messagex;
             messagex << "Message " << i;
@@ -418,37 +418,37 @@ int _tmain (int argc, _TCHAR* argv [])
     vector<MyMessage> user0;
     vector<MyMessage> user1;
     vector<MyMessage> user2;
-    for (int x = 0; x < (int) common.size (); x++)
+    for (int x = 0; x < (int)common.size(); x++)
     {
-        MyMessage message = common [x];
-        if (message.GetTo () == "User 0")
-            user0.push_back (message);
+        MyMessage message = common[x];
+        if (message.GetTo() == "User 0")
+            user0.push_back(message);
         else
-            if (message.GetTo () == "User 1")
+            if (message.GetTo() == "User 1")
                 user1.push_back (message);
             else
-                if (message.GetTo () == "User 2")
-                    user2.push_back (message);
+                if (message.GetTo() == "User 2")
+                    user2.push_back(message);
     }
     cout << "Messages for user 2: " << endl;
-    for (int i = 0; i < (int) user2.size (); i++)
+    for (int i = 0; i < (int)user2.size(); i++)
     {
         MyMessage message = user2[i];
-        cout << message.GetTo () << endl;
+        cout << message.GetMessage() << endl;
     }
     cout << "Messages for user 1: " << endl;
-    for (int i = 0; i < (int) user1.size (); i++)
+    for (int i = 0; i < (int)user1.size(); i++)
     {
         MyMessage message = user1[i];
-        cout << message.GetTo () << endl;
+        cout << message.GetMessage() << endl;
     }
     cout << "Messages for user 0: " << endl;
-    for (int i = 0; i < (int) user0.size (); i++)
+    for (int i = 0; i < (int)user0.size(); i++)
     {
     MyMessage message = user0[i];
-    cout << message.GetTo () << endl;
+    cout << message.GetMessage() << endl;
     }
-	cout << "Size of common vector: " << (int) common.size() << endl;
+	cout << "Size of common vector: " << (int)common.size() << endl;
 	return 0;
 }
 /* Теперь у вас есть некоторое представление о том, каким образом писать бизнес - логику 

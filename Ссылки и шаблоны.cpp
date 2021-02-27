@@ -847,7 +847,7 @@ T GetData() const
 { 
   return Data % 10;
 }
-//Это успешно скомпилируется для Item< int >, но для Item< float > будет ошибка:
+// Это успешно скомпилируется для Item< int >, но для Item< float > будет ошибка:
 item1.GetData(); // item1 как Item< int >
  // ERROR
 item2.GetData(); // item2 как Item< float >
