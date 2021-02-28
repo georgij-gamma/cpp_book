@@ -24,7 +24,33 @@ TYPE reinterpret_cast<TYPE> (object);
 Применяется только в случае полной уверенности программиста в собственных действиях. Не снимает 
 константность и volatile. применяется для приведения указателя к указателю, указателя к целому 
 и наоборот. */
-//	5. C-style cast Синтаксис:
+//	5. duration_cast Синтаксис:
+duration_cast<ratio>
+/* Конвертирует промежуток времени в известные единицы */
+#include <iostream>
+#include <cmath>
+#include <chrono>
+using namespace std::chrono;
+int main ()
+{
+    auto t0 = high_resolution_clock::now();
+    for (size_t i = 0; i < 1000; i++)
+        std::cout << '\b';
+    auto t1 = high_resolution_clock::now();
+
+    // std::cout << std::fixed;
+
+    uint32_t dt = duration_cast<nanoseconds>(t1 - t0).count();
+    std::cout << '\n' << dt << "ns\n";
+    dt = (round (double(dt) / 1000) );
+    std::cout << dt << "us\n";
+    dt = (round (double(dt) / 1000) );
+    std::cout << dt << "ms\n";
+
+    //std::cin.get();
+	return 0;
+}
+//	6. C-style cast Синтаксис:
 TYPE (TYPE*) object;
 /* Си-шный метод приведения типов. Пожалуй самый нежелательный способ приведения типов. 
 Страуструп пишет: «Например, что это значит выражение: x = (T)y;. Мы не знаем. Это зависит от 
@@ -34,7 +60,7 @@ TYPE (TYPE*) object;
 По этой причине программист может не знать, что он делает на самом деле».
 Вторая причина нежелательного использования приведения типов в C-style — трудоемкость процесса 
 поиска мест приведения типов. */
-//	6. qobject_cast Синтаксис:
+//	7. qobject_cast Синтаксис:
 TYPE qobject_cast<TYPE>(QObject *object)
 /* Приводит объект QObject* к типу TYPE если объект типа объекта TYPE или тип наследует от TYPE 
 иначе возвращает 0. qobject_cast от 0 также дает 0. Необходимое условие. Класс должен наследовать 
@@ -58,7 +84,7 @@ inline T qobject_cast(QObject *object)
 staticMetaObject, у которого вызывается метод cast, который возвращает const_cast переданного 
 ему объекта, попутно проверяя наследуется ли данный объект от QObject. Далее полученному объекту 
 делается static_cast и возвращается результат. */
-// 7. qvariant_cast Синтаксис:
+// 8. qvariant_cast Синтаксис:
 TYPE qvariant_cast<TYPE>(const QVariant &value)
 /* Приводит объект класса QVariant к нужному классу. Функция аналогична функции qVariantValue.
 Рассмотрим, что происходит внутри: */
