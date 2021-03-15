@@ -770,8 +770,6 @@ int main()
     cout << "Bye\n";
     return 0; 
 }
-/* 
-
 
 String * favorite = new String(sayings[choice]);
 /* Здесь указатель favorite обеспечивает доступ к безымянному объекту, созданному
