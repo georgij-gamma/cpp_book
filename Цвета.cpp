@@ -27,7 +27,10 @@ void main()
     SetConsoleTextAttribute(hConsoleHandle, FOREGROUND_BLUE | BACKGROUND_RED);
     cout << "Hello world!" << endl;
 }
-
+// Пример:
+    SetConsoleTextAttribute(hConsoleHandle, 0xE | 0);   // жёлтый на черном
+    std::cout << "This color is Yellow on black\n";
+    SetConsoleTextAttribute(hConsoleHandle, 7 | 0);     // белый на черном (восстановление цвета)
 ///////////////////////////////////////////////////////////
 
 #include <iostream.h>
@@ -107,7 +110,8 @@ namespace Color {
     public:
         Modifier(Code pCode) : code(pCode) {}
         friend std::ostream&
-        operator << (std::ostream& os, const Modifier& mod) {
+        operator << (std::ostream& os, const Modifier& mod)
+		{
             return os << "\033[" << mod.code << "m";
         }
     };
