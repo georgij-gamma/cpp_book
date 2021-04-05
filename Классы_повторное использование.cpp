@@ -568,7 +568,7 @@ virtual (virtual и public можно использовать в любом п�
 class Singer : virtual public Worker {...};
 class Waiter : public virtual Worker {...};
 // Затем необходимо определить SingingWaiter, как и раньше:
-class SingingWaiter: public Singer, public Waiter {...};
+class SingingWaiter : public Singer, public Waiter {...};
 /* Теперь объект SingingWaiter будет содержать лишь одну копию объекта Worker,
 а производные объекты Singer и Waiter будут иметь один общий базовый объект
 Worker вместо двух его копий. Поскольку объект SingingWaiter теперь
@@ -713,12 +713,12 @@ Singer::Show(), и Waiter::Show() вызывают Worker::Show(). Как исп
 компоненты вместе в методе SingingWaiter::Show(). */
 void Worker::Data() const
 {
-	cout << "Name: "	<< fullname << "\n";
+	cout << "Name: "	<< fullname  << "\n";
 	cout << "Employee ID: " << id << "\n";
 }
 void Waiter::Data() const
 {
-cout << "Panache rating: " << panache << "\n";
+	cout << "Panache rating: " << panache << "\n";
 }
 void Singer::Data() const
 {
