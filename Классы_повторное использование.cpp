@@ -1587,7 +1587,273 @@ Crab<Stack, int, double> nebula; // T=Stack, U=int, V=double
 создании его экземпляра.
 • Не связанные шаблонные друзья — все специализации друга являются друзьями
 для всех специализаций класса.
-  Нешаблонные дружественные функции для шаблонных классов.
+  Нешаблонные дружественные функции для шаблонных классов. */
+template <class T>
+class HasFriend
+{
+public:
+	friend void counts();	// дружественная для всех созданий экземпляров HasFriend
+};
+/* Функция counts() объявляется дружественной для всех возможных созданий 
+экземпляров шаблона. Например, она будет дружественной для класса HasFriend<int>
+и для класса HasFriend<string>. Функция counts() не вызывается объектом (она 
+является дружественной, а не функцией-членом) и она не принимает каких-либо 
+объектных параметров. Каким же образом она обращается к объекту HasFriend? 
+Существует несколько вариантов:
+- Она может иметь доступ к глобальному объекту;
+- она может иметь доступ к локальным объектам через глобальный указатель;
+- она может создать собственные объекты;
+- она может иметь доступ к статическим членам-данным, расположенным отдельно от объекта.
+Предположим, что для дружественной функции требуется создать аргумент типа
+шаблонного класса. Возможно ли, например, следующее объявление друга? */
+friend void report(HasFriend &); // невозможно, объект HasFriend не может существовать.
+/* Существуют только конкретные специализации, такие как HasFriend<short>. Для
+создания аргумента типа шаблонного класса необходимо указать специализацию, например: */
+template <class T>
+class HasFriend
+{
+	friend void report(HasFriend<T> &);	// связанный друг шаблона
+};
+// Представьте себе специализацию, генерируемую при объявлении объекта конкретного типа:
+HasFriend<int> hf;
+// Компилятор заменит параметр шаблона Т на int, и объявление друга примет следующий вид:
+class HasFriend<int>
+{
+	friend void report(HasFriend<int> &);	// связанный друг шаблона
+};
+/* To есть функция report() с параметром HasFriend<int> становится дружественной
+для класса HasFriend<int>. Аналогично, функция report() с параметром HasFriend<double>
+будет перегруженной версией report(), которая является дружественной ДЛЯ класса
+HasFriend<double>. report() — нешаблонная функция: шаблоном является лишь ее параметр.
+Это означает, что для использования друзей необходимо определить явные специализации: */
+void report(HasFriend<short> &)	{...}; // явная специализация для short
+void report(HasFriend<int> &)	{...}; // явная специализация для int
+// frnd2tmp.cpp -- шаблонный класс с нешаблонными друзьями
+#include <iostream>
+using std::cout;
+using std::endl;
+template <typename T>
+class HasFriend
+{
+private:
+    T item;
+    static int ct;
+public:
+    HasFriend(const T & i) : item(i) {ct++;}    // при создании объекта одного типа меняется 
+                                               // статический член его конкретной специализаций
+    ~HasFriend()  {ct--; }
+    friend void counts();
+    friend void reports(HasFriend<T> &);       // template parameter
+};
+template <typename T>                   // Каждая специализация имеет собственный статический член данных ct
+int HasFriend<T>::ct = 0;
+
+void counts()                           // Нешаблонный друг для всех классов HasFriend<T>
+{   // выводит значения ct из двух конкретных специализаций:
+    cout << "int count: "    << HasFriend<int>::ct    << "; ";
+    cout << "double count: " << HasFriend<double>::ct << endl;
+}
+void reports(HasFriend<int> & hf)       	// Нешаблонный друг для класса HasFriend<int>
+{
+    cout << "HasFriend<int>: "    << hf.item << endl;
+}
+void reports(HasFriend<double> & hf)    	// Нешаблонный друг для класса HasFriend<double>
+{
+    cout << "HasFriend<double>: " << hf.item << endl;
+}
+int main()
+{
+    cout << "No objects declared: ";    	// объекты пока не объявлены
+    counts();
+    HasFriend<int> hfi1(10);
+    cout << "After hfi1 declared: ";    	// после объявления hfi1
+    counts();
+    HasFriend<int> hfi2(20);
+    cout << "After hfi2 declared: ";    	// после объявления hfi2
+    counts();
+    HasFriend<double> hfdb(10.5);
+    cout << "After hfdb declared: ";    	// после объявления hfdb
+    counts(); 
+    reports(hfi1);
+    reports(hfi2);
+    reports(hfdb);
+    // std::cin.get();
+    return 0; 
+}
+/*  Связанные шаблонные функции, дружественные шаблонным классам.
+ Можно сделать дружественные функции также шаблонами. В частности, 
+можно создать связанных друзей шаблона — чтобы каждая специализация класса 
+получала соответствующую специализацию друга. Этот прием немного сложнее, чем 
+в случае нешаблонных друзей, и состоит из трех шагов. На первом шаге перед 
+определением класса необходимо объявить каждую шаблонную функцию: */
+template <typename T> void counts();
+template <typename T> void report(T &);
+/* Затем внутри функции нужно снова объявить шаблоны в качестве друзей. Вот операторы,
+которые объявляют специализации, основанные на типе параметра шаблонного класса: */
+template <typename TT>
+class HasFriendT
+{
+	friend void counts<TT>();
+	friend void report<>(HasFriendT<TT> &);
+};
+/* Угловые скобки <> в объявлениях означают специализации шаблона. В случае report() 
+скобки о могут быть пустыми, т.к. аргумент типа шаблона можно получить из аргумента 
+функции HasFriendT<TT>. Но возможен и такой вариант: */
+report< HasFriendT<TT> >(HasFriendT<TT> &)
+/* Функция counts() не имеет параметров, поэтому для определения ее специализации 
+нужно задействовать аргумент шаблона <ТТ>. Обратите внимание, что ТТ — тип
+параметра для класса HasFriendT. Чтобы понять эти объявления, лучше представить,
+чем они станут при объявлении объекта конкретной специализации. Например: */
+HasFriendT<int> squack;
+// Компилятор подставит вместо ТТ тип int и сгенерирует следующее определение класса:
+class HasFriendT<int>
+{
+	friend void counts<int>();
+	friend void reporto(HasFriendT<int> &);
+	...
+};
+/* Одна специализация основана на типе ТТ, который преобразуется в int, а другая —
+на HasFriendT<TT>, который преобразуется в HasFriendT<int>. Таким образом, 
+специализации шаблона counts<int>() и report< HasFriendT<int> >() объявлены как
+друзья класса HasFriendT<int>.
+ Третье требование, которому должна удовлетворять программа — она должна содержать 
+определения шаблонов для друзей. */
+#include <iostream>					// tmp2tmp.cpp -- шаблонные друзья для шаблонного класса
+using std::cout;
+using std::endl;
+// Прототипы шаблонов
+template <typename T> void counts();
+template <typename T> void report(T &);
+// Шаблонный класс
+template <typename TT>
+class HasFriendT
+{
+private:
+    TT item;
+    static int ct;
+public:
+    HasFriendT(const TT & i) : item(i) {ct++;}
+    ~HasFriendT() { ct--; }
+    friend void counts<TT>();
+    friend void report<>(HasFriendT<TT> &);
+};
+template <typename T>
+int HasFriendT<T>::ct = 0;
+// Определения дружественных функций для шаблона
+template <typename T>
+void counts()
+{
+    cout << "template size: " << sizeof(HasFriendT<T>) << "; ";	// размер шаблона
+    cout << "template counts(): " << HasFriendT<T>::ct << endl;	// counts() из шаблона
+}
+template <typename T>
+void report(T & hf)
+{
+    cout << hf.item << endl;
+}
+int main()
+{ /* Поскольку вызовы функции counts() не содержат параметров, из которых компилятор мог бы вывести 
+требуемую специализацию, в этих вызовах используются формы count<int>() и count<double>(). */
+    counts<int>();
+    HasFriendT<int>     hfi1(10);
+    HasFriendT<int>     hfi2(20);
+    HasFriendT<double>  hfdb(10.5);
+// в вызовах reports() компилятор может определять специализацию на основе типа аргумента^
+    report(hfi1);                         // генерирует report(HasFriendT<int> &)
+    report(hfi2);                         // генерирует report(HasFriendT<int> &)
+    report(hfdb);                         // генерирует report(HasFriendT<double> &)
+    cout << "counts<int>() output:\n";      // вывод из counts<int>()
+    counts<int>();
+/* counts<double> сообщает размер шаблона, отличный от выводимого counts<int> — т.е. каждому типу Т
+соответствует собственная дружественная функция count(). */
+    cout << "counts<double>() output:\n";   // вывод из counts<double>()
+    counts<double>();
+    // std::cin.get();
+    return 0;
+}
+/*  Не связанные шаблонные функции, дружественные шаблонным классам.
+ У не связанных друзей параметры типа для шаблонов друзей отличаются от параметров 
+типа для шаблонных классов: */
+template <typename T>
+class ManyFriend
+{
+	template <typename С, typename D> friend void show2(C &, D &);
+};
+// Вызов show2(hfil, hfi2) соответствует следующей специализации:
+void show2<ManyFriend<int> &, ManyFriend<int> &>(ManyFriend<int> & с, ManyFriend<int> & d);
+/* Поскольку данная функция является другом для всех специализаций ManyFriend,
+она имеет доступ к членам item всех специализаций. Однако она использует доступ
+только к объектам ManyFriend<int>. Аналогично, вызов show2(hfd, hf І2) соответствует
+такой специализации: */
+void show2<ManyFriend<double> &, ManyFriend<int> &>(ManyFriend<double> & с, ManyFriend<int> & d);
+/* Эта функции также является другом для всех специализаций ManyFriend и 
+использует доступ к члену item объекта ManyFriend<int>, а также к члену
+item объекта ManyFriend<double>. */
+// manyfrnd.cpp -- не связанная шаблонная функция, дружественная шаблонному классу
+#include <iostream>
+using std::cout;
+using std::endl;
+template <typename T>
+class ManyFriend
+{
+private:
+    T item;
+public:
+/* У не связанных друзей параметры типа для шаблонов друзей отличаются от параметров 
+типа для шаблонных классов: */
+    ManyFriend(const T & i) : item(i) {}
+    template <typename C, typename D> friend void show2(C &, D &);
+};
+template <typename C, typename D> void show2(C & c, D & d)
+{
+    cout << c.item << ", " << d.item << endl;
+}
+int main()
+{
+    ManyFriend<int> hfi1(10);
+    ManyFriend<int> hfi2(20);
+    ManyFriend<double> hfdb(10.5);
+    cout << "hfi1, hfi2: ";
+    show2(hfi1, hfi2);
+    cout << "hfdb, hfi2: ";
+    show2(hfdb, hfi2);
+    // std::cin.get();
+    return 0;
+}
+/*  Псевдонимы шаблонов (С++11).
+ Бывает удобно, особенно при построении шаблонов, создавать псевдонимы для типов.
+Конструкция typedef позволяет создавать псевдонимы для специализаций шаблонов: */
+// Определение трех псевдонимов с помощью typedef
+typedef std::array<double,		12> arrd;
+typedef std::array<int,			12> arri;
+typedef std::array<std::string,	12> arrst;
+arrd gallons;		// gallons	имеет тип std::array<double,		12>
+arri days;			// days		имеет тип std::array<int,			12>
+arrst months;		// months	имеет тип std::array<std::string,	12>
+/* Но если приходится постоянно писать код, содержащий такие описания typedef,
+вы можете подумать, а не забыли ли вы какую-то языковую возможность, которая 
+упрощает эту задачу, или не забыли ли добавить такую возможность в язык его 
+разработчики. В С++11, наконец, появилась ранее недоступная возможность — способ 
+использовать шаблон для получения семейства псевдонимов. Вот как это выглядит: */
+template<typename T>				// шаблон для создания
+using arrtype = std::array<T,12>;	// нескольких псевдонимов
+/* Ниже объявлен псевдоним шаблона arrtype, который можно применять вместо
+спецификатора типа:*/ 
+arrtype<double> gallons;				// gallons имеет тип std::array<double, 12>
+arrtype<int> days;					// days имеет тип std::array<int, 12>
+arrtype<std::string> months;			// months имеет тип std::array<std::string, 12>
+/* Короче говоря, arrtype<T> означает тип std::array<T, 12>.
+В C++11 синтаксис using = можно использовать и не для шаблонов. В таких 
+случаях он эквивалентен typedef: */
+typedef const char * pc1;			// синтаксис typedef
+using pc2 = const char *;			// синтаксис using =
+typedef const int *(*pa1)[10];		// синтаксис typedef
+using pa2 = const int *(*)[10];		// синтаксис using =
+/* В C++11 появилось еще одно дополнение — шаблон с переменным числом аргументов
+(variadic template), который позволяет определить шаблонный класс или шаблонную
+функцию с переменным количеством инициализаторов.
+
+
 
 
 
