@@ -503,45 +503,45 @@ struct debts
 
 int main()
 {
-using namespace std;
-int things[6] = {13, 31, 103, 301, 310, 130};
-debts mr_E[3] =
-{
-    {"Ima Wolfe", 2400.0},
-    {"Ura Foxe", 1300.0},
-    {"Iby Stout", 1800.0}
-};
-double *pd[3];
-// Установка указателей на члены amount структур в mr_E
-for (int i = 0; i < 3; i++ )
-pd[i] = &mr_E[i].amount;
+	using namespace std;
+	int things[6] = {13, 31, 103, 301, 310, 130};
+	debts mr_E[3] =
+	{
+		{"Ima Wolfe", 2400.0},
+		{"Ura Foxe", 1300.0},
+		{"Iby Stout", 1800.0}
+	};
+	double *pd[3];
+	// Установка указателей на члены amount структур в mr_E
+	for (int i = 0; i < 3; i++ )
+		pd[i] = &mr_E[i].amount;
 
-cout << "Listing Mr. E's counts of things:\n";
-// things - массив значений int
-ShowArray(things, 6); // использует шаблон А
+	cout << "Listing Mr. E's counts of things:\n";
+	// things - массив значений int
+	ShowArray(things, 6); // использует шаблон А
 
-cout << "Listing Mr. E's debts:\n";
-// pd - массив указателей на double
-ShowArray(pd, 3); // использует шаблон В (более специализированный)
-return 0;
+	cout << "Listing Mr. E's debts:\n";
+	// pd - массив указателей на double
+	ShowArray(pd, 3); // использует шаблон В (более специализированный)
+	return 0;
 }
 template <typename T>
 void ShowArray(T arr[], int n) // шаблон А
 {
-using namespace std;
-cout << "template A\n";
-for (int i = 0; i < n; i++)
+	using namespace std;
+	cout << "template A\n";
+	for (int i = 0; i < n; i++)
 	cout << arr[i] << ' ';
-cout << endl;
+	cout << endl;
 }
 template <typename T>           // шаблон В
 void ShowArray (T *arr[], int n)
 {
-using namespace std;
-cout << "template B\n";
-for (int i = 0; i < n; i++ )
-	cout << *arr [i] << ' ';
-cout << endl;
+	using namespace std;
+	cout << "template B\n";
+	for (int i = 0; i < n; i++ )
+		cout << *arr[i] << ' ';
+	cout << endl;
 }
 /* При вызове функции ShowArray(things, 6);, идентификатор things 
 представляет собой имя массива элементов int, поэтому приведенный 
