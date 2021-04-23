@@ -31,7 +31,7 @@ duration_cast<ratio>
 #include <cmath>
 #include <chrono>
 using namespace std::chrono;
-int main ()
+int main()
 {
     auto t0 = high_resolution_clock::now();
     for (size_t i = 0; i < 1000; i++)
