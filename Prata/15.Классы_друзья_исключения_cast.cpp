@@ -1067,8 +1067,188 @@ if (pb == NULL)
 	exit(EXIT_FAILURE);
 }
 /*  Исключения, классы и наследование.
+ Исключения, классы и наследование взаимодействуют несколькими способами.
+Во-первых, можно породить один класс исключения от другого класса, как это 
+сделано в стандартной библиотеке C++. Во-вторых, можно добавить исключения в классы,
+вставив объявление класса исключения в определение класса. В-третьих, такое 
+вложенное объявление может быть унаследовано и само служить базовым классом.*/
+#ifndef _SALES_H_		// sales.h  -- исключения и наследование
+#define _SALES_H_
+#include <stdexcept>
+#include <string>
+class Sales
+{
+public:
+    enum { MONTHS = 12 };                       // может быть статической константой
+    class bad_index : public std::logic_error   // может сохранять недопустимые значения индексов и
+    {                                           // сообщать о них.
+    private:
+        int bi;                                 // недопустимое значение индекса
+    public:                                     // Ошибка индекса в объекте Sales:
+        explicit bad_index(int ix, const std::string & s = "Index error in Sales object\n");
+        int bi_val() const { return bi; }
+        virtual ~bad_index() throw() {}         // виртуальный деструктор использует спецификацию исключения
+    };
+    explicit Sales(int yy = 0);
+    Sales(int yy, const double * gr, int n);
+    virtual ~Sales() {}
+    int Year() const { return year; }
+    virtual double operator[](int i) const;     // для доступа к хранимым в объекте отдельным элементам массива
+    virtual double & operator[](int i); // и для генерации исключения, если индекс массива выходит за допустимые пределы
+private:
+    double gross[MONTHS];
+    int year;
+};
+class LabeledSales : public Sales
+{
+  public:
+    class nbad_index : public Sales::bad_index  // порожден от bad_index и может дополнительно сохранять и выводить 
+    {                                           // метки объектов LabeledSales.
+    private:
+        std::string lbl;
+    public:
+        nbad_index(const std::string & lb, int ix, const std::string & s = "Index error in LabeledSales object\n");
+        const std::string & label_val() const { return lbl; }
+        virtual ~nbad_index() throw() {}        // виртуальный деструктор использует спецификацию исключения
+     };
+    explicit LabeledSales(const std::string & lb = "none", int yy = 0);
+    LabeledSales(const std::string & lb, int yy, const double * gr, int n);
+    virtual ~LabeledSales()  {}
+    const std::string & Label() const { return label; }
+    virtual double operator[](int i) const;
+    virtual double & operator[](int i);
+private:
+    std::string label;
+};
+#endif
+// sales.cpp -- реализация Sales
+#include "sales.h"
+using std::string;
+Sales::bad_index::bad_index(int ix, const string & s ) : std::logic_error(s), bi(ix) {}
+Sales::Sales(int yy)
+{
+    year = yy;
+    for (int i = 0; i < MONTHS; ++i)
+        gross[i] = 0;
+}
+Sales::Sales(int yy, const double * gr, int n)
+{
+    year = yy;
+    int lim = (n < MONTHS)? n : MONTHS;
+    int i;
+    for (i = 0; i < lim; ++i)
+        gross[i] = gr[i];
+    // for i > n and i < MONTHS
+    for ( ; i < MONTHS; ++i)
+        gross[i] = 0;
+}
+double Sales::operator[](int i) const
+{
+    if(i < 0 || i >= MONTHS)
+        throw bad_index(i);     // генерация исключения, если индекс массива выходит за допустимые пределы
+    return gross[i];
+}
+double & Sales::operator[](int i)
+{
+    if(i < 0 || i >= MONTHS)
+        throw bad_index(i);     // генерация исключения, если индекс массива выходит за допустимые пределы
+    return gross[i];
+}
+LabeledSales::nbad_index::nbad_index(const string & lb, int ix, const string & s ) : Sales::bad_index(ix, s)
+{
+    lbl = lb;
+}
+LabeledSales::LabeledSales(const string & lb, int yy)                              : Sales(yy)
+{
+    label = lb;
+}
+LabeledSales::LabeledSales(const string & lb, int yy, const double * gr, int n)    : Sales(yy, gr, n)
+{
+    label = lb;
+}
+double LabeledSales::operator[](int i) const
+{    if(i < 0 || i >= MONTHS)
+        throw nbad_index(Label(), i); // генерация исключения, если индекс массива выходит за допустимые пределы
+    return Sales::operator[](i);
+}
+double & LabeledSales::operator[](int i)
+{
+    if(i < 0 || i >= MONTHS)
+        throw nbad_index(Label(), i); // генерация исключения, если индекс массива выходит за допустимые пределы
+    return Sales::operator[](i);
+}
+// use_sales.cpp  -- вложенные исключения
+#include <iostream>
+#include "sales.h"
+int main()
+{
+    double vals1[12] =
+    {
+        1220, 1100, 1122, 2212, 1232, 2334,
+        2884, 2393, 3302, 2922, 3002, 3544
+    };
+    double vals2[12] =
+    {
+        12, 11, 22, 21, 32, 34,
+        28, 29, 33, 29, 32, 35
+    };
+    Sales sales1(2011, vals1, 12);
+    LabeledSales sales2("Blogstar", 2012, vals2, 12 );
+    std::cout << "First try block:\n";
+    try                                                           // первый блок try
+    {
+        int i;
+        std::cout << "Year = "  << sales1.Year()  << std::endl;     // год
+        for (i = 0; i < 12; ++i)
+        {
+            std::cout << sales1[i] << ' ';
+            if (i % 6 == 5)
+                std::cout << std::endl;
+        }
+        std::cout << "Year = "  << sales2.Year()  << std::endl;     // год
+        std::cout << "Label = " << sales2.Label() << std::endl;     // метка
+        for (i = 0; i <= 12; ++i)
+        {
+            std::cout << sales2[i] << ' ';                         // пытается выйти за пределы массива(<=)
+            if (i % 6 == 5)
+                std::cout << std::endl;
+        }
+        std::cout << "End of try block 1.\n";                       // конец первого блока try
+    }
+    catch(LabeledSales::nbad_index & bad)
+    {
+        std::cout << bad.what();
+        std::cout << "Company: "   << bad.label_val() << std::endl; // компания
+        std::cout << "bad index: " << bad.bi_val()    << std::endl; // недопустимый индекс
+    }
+    catch(Sales::bad_index & bad)
+    {
+        std::cout << bad.what();
+        std::cout << "bad index: " << bad.bi_val()    << std::endl; // недопустимый индекс
+    }
+    std::cout << "\nNext try block:\n";
+    try                                                           // второй блок try
+    {
+        sales2[2] = 37.5;
+        sales1[20] = 23345;                                        // пытается выйти за пределы массива([20])
+        std::cout << "End of try block 2.\n";                       // конец второго блока try
+    }
+    catch(LabeledSales::nbad_index & bad)
+    {
+        std::cout << bad.what();
+        std::cout << "Company: "   << bad.label_val() << std::endl; // компания
+        std::cout << "bad index: " << bad.bi_val()    << std::endl; // недопустимый индекс
+    }
+    catch(Sales::bad_index & bad)
+    {
+        std::cout << bad.what();
+        std::cout << "bad index: " << bad.bi_val()    << std::endl; // недопустимый индекс
+    }
+    std::cout << "done\n";
+    return 0;
+}
+/*  Потеря исключений.
  
-
 
 
 
