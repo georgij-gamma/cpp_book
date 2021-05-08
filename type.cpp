@@ -117,6 +117,22 @@ os.setf(initial); // восстановление исходного состо�
 #include <iomanip>
 std::cout << std::setprecision(2); // точность через iomanip
 
+// Сохранение значение адреса указателя и hex в переменную:
+int main(int argc, char** argv)
+{
+    int a = 10;
+    std::cout << "   &a == "   << &a            << std::endl;
+    unsigned int b = reinterpret_cast<unsigned int>(&a);
+    std::cout << "hex b == 0x" << std::hex << b << std::endl;
+    std::cout << "dec b == "   << std::dec << b << std::endl;
+    int * p = reinterpret_cast<int*>(b);	// здесь новому указателю мы присваиваем значение,
+										// которое является адресом 'a', а не адресом 'b'.
+    std::cout << "*p == "      << *p            << std::endl;
+    b = 0x123ff;			// 'b' принимает новое произвольное hex значение 
+    std::cout <<  "b == 0x"    << std::hex << b << std::endl;
+	return 0;
+}
+
 // It's prog defines type name & out him on display
 // this prog releas on vscode under gcc c++11
 #include <iostream>
