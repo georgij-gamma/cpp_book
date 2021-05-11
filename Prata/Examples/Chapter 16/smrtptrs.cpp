@@ -1,4 +1,4 @@
-// smrtptrs.cpp -- using three kinds of smart pointers
+// smrtptrs.cpp -- использование трех видов интеллектуальных указателей
 #include <iostream>
 #include <string>
 #include <memory>
@@ -16,8 +16,8 @@ public:
 int main()
 {
     {
-        std::auto_ptr<Report> ps (new Report("using auto_ptr"));
-        ps->comment();   // use -> to invoke a member function
+        std::auto_ptr<Report>   ps (new Report("using auto_ptr"));
+        ps->comment();   // использование операции -> для вызова функции-члена
     }
     {
         std::shared_ptr<Report> ps (new Report("using shared_ptr"));

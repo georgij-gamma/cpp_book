@@ -1,4 +1,4 @@
-// strfile.cpp -- read strings from a file
+// strfile.cpp -- чтение строк из файла
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -6,26 +6,24 @@
 int main()
 {
      using namespace std;
-     ifstream fin;
-     fin.open("tobuy.txt");
-     if (fin.is_open() == false)
-     {
-        cerr << "Can't open file. Bye.\n";
+      ifstream fin;
+      fin.open("D:\\repos\\visual\\code\\Prata\\16\\string\\tobuy.txt");
+      if (fin.is_open() == false)
+      {
+        cerr << "Can't open file. Bye.\n";      // не удается открыть файл
         exit(EXIT_FAILURE);
-     }
-     string item;
-     int count = 0;
-     
-     getline(fin, item, ':');
-     while (fin)  // while input is good
-     {
+      }
+      string item;
+      int count = 0;
+      getline(fin, item, ':');
+      while (fin)                                // до тех пор, пока нет ошибок ввода
+      {
         ++count;
-        cout << count <<": " << item << endl;
+        cout << count << ": " << item << endl;  // нумерует строки и выводит их на экран
         getline(fin, item,':');     
-     }
-     cout << "Done\n";
-     fin.close();
-	 // std::cin.get();
-	 // std::cin.get();
-     return 0;
+      }
+      cout << "Done\n";
+      fin.close();
+
+      return 0;
 }

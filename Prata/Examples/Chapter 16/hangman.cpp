@@ -1,4 +1,4 @@
-// hangman.cpp -- some string methods
+// hangman.cpp -- использование некоторых методов работы со строками
 #include <iostream>
 #include <string>
 #include <cstdlib>
@@ -21,7 +21,7 @@ int main()
     
     std::srand(std::time(0));
     char play;
-    cout << "Will you play a word game? <y/n> ";
+    cout << "Will you play a word game? <y/n> ";            // запуск игры в слова
     cin >> play;
     play = tolower(play);
     while (play == 'y')
@@ -35,34 +35,38 @@ int main()
             << " letters, and you guess\n"
             << "one letter at a time. You get " << guesses
             << " wrong guesses.\n";
-        cout << "Your word: " << attempt << endl;
-        while (guesses > 0 && attempt != target)
+        cout << "Your word: " << attempt << endl;           // вывод слова
+    // перегрузка операций отношения позволяет работать со строками так же,
+        while (guesses > 0 && attempt != target) // как с числовыми переменными
         {
             char letter;
             cout << "Guess a letter: ";
             cin >> letter;
+    /* find() для проверки на повторное использование символа; если символ уже вводился, 
+    то он будет присутствовать либо в строке badchars (неудачные попытки), либо в строке 
+    attempt (удачные попытки): */
             if (badchars.find(letter) != string::npos
                 || attempt.find(letter) != string::npos)
             {
                 cout << "You already guessed that. Try again.\n";
                     continue;
             }
-            int loc = target.find(letter);
-            if (loc == string::npos)
+            int loc = target.find(letter);  // проверка на наличие введенного символа в загаданном слове
+            if (loc == string::npos) // если достиг максимума size_t, значит введенной буквы нет в слове
             {
                 cout << "Oh, bad guess!\n";
                 --guesses;
-                badchars += letter; // add to string
+                badchars += letter;                         // добавить к строке
             }
             else
-            {
-                cout << "Good guess!\n";
-                attempt[loc]=letter;
-                // check if letter appears again
-                loc = target.find(letter, loc + 1);
-                while (loc != string::npos)
+            { // Если переменная Іос имеет допустимое значение, буква может быть помещена в
+                cout << "Good guess!\n"; // соответствующую позицию строки ответа:
+                attempt[loc] = letter;
+                // Проверить, не появляется ли буква еще раз
+                loc = target.find(letter, loc + 1); // Поскольку буква была найдена в позиции
+                while (loc != string::npos)         // loc, следующий поиск должен начаться с позиции loc + 1
                 {
-                    attempt[loc]=letter;
+                    attempt[loc] = letter;
                     loc = target.find(letter, loc + 1);
                 }
            }
@@ -78,13 +82,10 @@ int main()
             cout << "That's right!\n";
         else
             cout << "Sorry, the word is " << target << ".\n";
-
         cout << "Will you play another? <y/n> ";
-        cin >> play;
+        cin  >> play;
         play = tolower(play);
     }
-
     cout << "Bye\n";
-
     return 0; 
 }
