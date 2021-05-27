@@ -873,7 +873,7 @@ scores.erase(scores.begin(), scores.begin() + 2);
 итераторы), описывающая диапазон, начинающийся с р1 и заканчивающийся, но не 
 включающий, р2. Таким образом, диапазон [begin(), end()) охватывает все 
 содержимое коллекции. Кроме того, запись [p1, p1) определяет пустой диапазон.
-Нотация [) неявляется частью языка C++, поэтому в коде она не используется и
+Нотация [) не является частью языка C++, поэтому в коде она не используется и
 присутствует только в документации.
  Метод insert() дополняет erase(). В качестве аргументов он принимает три
 итератора. Первый указывает позицию, после которой будут добавляться новые 
@@ -2847,7 +2847,7 @@ int main()
     for_each(la.begin(), la.end(), Show);
     cout << endl;
     list<int>::iterator last;
-    last = remove(lb.begin(), lb.end(), 4);	// после вызова функции remove () список lb по-прежнему 
+    last = remove(lb.begin(), lb.end(), 4);	// после вызова функции remove() список lb по-прежнему 
                                             // содержит 10 элементов.
     cout << "After using the remove() function:\n";     // список после использования функции remove()
     cout << "lb:\t";
@@ -2866,13 +2866,105 @@ void Show(int v) { std::cout << v << ' '; }
 можно применять с контейнерами смешанных типов, например, для сохранения данных 
 контейнера vector в списке или наборе.
   Использование STL.
- 
-
-
-
-
-
-
+ Предположим, требуется написать программу, которая дает возможность пользователю 
+вводить слова. Можно создать объект vector<string> и применить push_back() для 
+добавления введенных слов в вектор: */
+vector<string> words;
+string input;
+while (cin >> input && input != "quit")
+	words.push_back(input);
+/* Можно воспользоваться sort() для получения алфавитного списка слов, а затем unique(),
+но такой подход ведет к перезаписи исходных данных, поскольку sort() — алгоритм, 
+работающий "по месту". Существует более простой способ, можно создать объект set<string>
+и скопировать (используя итератор вставки) слова из вектора в набор. Набор автоматически
+сортирует свое содержимое, что исключает необходимость вызова sort(). Кроме того, набор 
+хранит только по одной копии каждого ключа, поэтому не придется вызывать и unique(). 
+Но спецификация требует игнорировать регистр. Один из способов обеспечения этого —
+использование transform() вместо сору() для копирования данных из вектора в набор. В 
+качестве функции трансформации можно применить такую, которая преобразует строки в 
+нижний регистр: */
+set<string> wordset;
+transform(words.begin(), words.end(), insert_iterator< set<string> > (wordset, wordset.begin()), ToLower);
+/* Написание функции ToLower() не представляет сложности. Нужно с помощью transform()
+применить функцию tolower() к каждому элементу строки, указывая строку и в качестве 
+источника, и в качестве места назначения. Объекты string также могут использовать 
+функции STL. */
+string & ToLower(string & st)
+{
+	transfarm(st.begin(), st.end(), st.begin(), tolower);
+	return st;
+}
+/* Одна из потенциальных проблем состоит в том, что функция tolower() определяется 
+как int tolower(int), а некоторые компиляторы требуют, чтобы функция соответствовала
+типу элемента, которым является char. Одно из возможных решений — замена tolower на
+toLower и предоставление следующего определения: */
+char toLower(char ch) { return tolower(ch); }
+/* Для получения количества появлений каждого слова в строке ввода можно применить 
+функцию count(). Она принимает в качестве аргументов диапазон и значение, а возвращает
+количество появлений этого значения в диапазоне. Можно воспользоваться объектом vector,
+чтобы задать диапазон, и объектом set, чтобы передать список слов для подсчета. То 
+есть для каждого слова в наборе можно подсчитать количество его появлений в векторе. 
+Чтобы результаты подсчета оставались связанными с соответствующим словом, слово и 
+количество можно сохранить в виде объекта pair<const string, int> внутри объекта map. 
+Слово будет ключом (только одной копией), а количество — значением. Это можно сделать 
+в единственном цикле: */
+map<string, int> wordmap;
+set<string>::iterator si;
+for (si = wordset.begin(); si != wordset.end(); si++)
+	wordmap.insert(pair<string, int>(*si, count(words.begin(), words.end(), *si)));
+/* Поскольку контейнер wordset содержит все ключи, используемые wordmap, следующий
+код может выступать альтернативным способом для сохранения результатов: */
+for (si = wordset.begin() ; si != wordset.end(); si++)
+	wordmap[*si] = count(words.begin(), words.end(), *si);
+/* Так как si указывает на строку в контейнере wordset, *si — это строка, которая
+может служить ключом для wordmap. Этот код помещает ключи и значения в карту wordmap.
+Аналогично, нотацию массивов можно применить для выдачи результатов: */
+for (si = wordset.begin(); si != wordset.end(); si++)
+	cout << *si << ": " << wordmap[*si] << endl;
+// Если ключ является недопустимым, то соответствующее ему значение будет равно 0.
+#include <iostream>			//usealgo.cpp -- использование нескольких элементов STL
+#include <string>
+#include <vector>
+#include <set>
+#include <map>
+#include <iterator>
+#include <algorithm>
+#include <cctype>
+using namespace std;
+char toLower(char ch) { return tolower(ch); }
+string & ToLower(string & st);
+void display(const string & s);
+int main()
+{
+    vector<string> words;
+    cout << "Enter words (enter quit to quit):\n";		// запрос на ввод слов
+    string input;
+    while (cin >> input && input != "quit")
+        words.push_back(input);
+    cout << "You entered the following words:\n";		// отображение введенных слов
+    for_each(words.begin(), words.end(), display);
+    cout << endl;
+    set<string> wordset;								// Помещение слов в набор с преобразование букв в строчные
+    transform(words.begin(), words.end(), insert_iterator<set<string> > (wordset, wordset.begin()), ToLower);
+    cout << "\nAlphabetic list of words:\n";			// список слов в алфавитном порядке
+    for_each(wordset.begin(), wordset.end(), display);
+    cout << endl;
+    map<string, int> wordmap;						// Помещение и частоты его помещения в карту
+    set<string>::iterator si;
+    for (si = wordset.begin(); si != wordset.end(); si++)
+        wordmap[*si] = count(words.begin(), words.end(), *si);
+    cout << "\nWord frequency:\n";					// частота появления слов
+    for (si = wordset.begin(); si != wordset.end(); si++)
+        cout << *si << ": " << wordmap[*si] << endl;	// Отображение содержимого карты
+    return 0;
+}
+string & ToLower(string & st)
+{
+    transform(st.begin(), st.end(), st.begin(), toLower);
+    return st;
+}
+void display(const string & s) { cout << s << " "; }
+/*  Другие библиотеки.
 
 
 
