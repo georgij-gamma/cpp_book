@@ -267,7 +267,7 @@ while (!write(connection, buf, buf_size))
 	Строковые потоки.
 Используются для организации сохранения простых типов данных в STL строки в стиле C++. 
 Возможности использования строковых потоков: */
-#include <tchar.h> // для ms visual "stdafx.h", для g++ #include <tchar.h>
+#include <tchar.h>		// для ms visual "stdafx.h", для g++ #include <tchar.h>
 #include <iostream>
 #include <strstream>
 #include <string>
@@ -276,7 +276,7 @@ int _tmain (int argc, _TCHAR* argv [])
 {
     std::strstream xstr;
     for (int i = 0; i < 10; i++)
-        xstr << "Demo " << i << std::endl;
+        xstr  << "Demo " << i << std::endl;
     std::cout << xstr.str();
     std::string str;
     str.assign (xstr.str(), xstr.pcount());

@@ -87,7 +87,7 @@ double temp;
 int i;
 for (i = 0; i < limit; i++)
 {
-	cout << "Enter value #" « (i + 1) « ": "; // ввод значения
+	cout << "Enter value #" << (i + 1) << ": "; // ввод значения
 	cin >> temp;
 	if (!cin) // неправильный ввод
 	{
