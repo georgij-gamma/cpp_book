@@ -200,7 +200,7 @@ StringBad & StringBad::operator=(const StringBad &);
 /*	Когда:
  Перегруженная операция присваивания используется при присваивании одного
 объекта другому существующему объекту: */
-StringBad headline1.("Celery .Stalks at Midnight");
+StringBad headline1("Celery Stalks at Midnight");
 StringBad knot;
 knot = headline1; // вызывается операция присваивания
 // При инициализации объекта операция присваивания не обязательна:
@@ -410,7 +410,7 @@ String & String::operator=(const char * s)
 }
 /* Как обычно, необходимо освободить память, ранее управляемую указателем str, и
 выделить достаточный объем памяти для новой строки.
-	Простой вывод String. */
+	Простой ввод String. */
 std::istream & operator>>(std::istream & is, String & st)		// Простой ввод String
 {
 	char temp[String::CINLIM];	  // строка длиной String::CINLIM
