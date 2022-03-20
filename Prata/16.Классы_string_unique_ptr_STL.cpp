@@ -1247,7 +1247,7 @@ public:
 	iterator() : pt(0) {}
 	iterator(Node * pn) : pt(pn) {}
 	double operator*() { return pt->item; }
-	iterators operator++()	// для ++it
+	iterator operator++()	// для ++it
 	{
 		pt = pt->p_next;
 		return *this;
