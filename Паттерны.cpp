@@ -901,7 +901,7 @@ public:
 class Decorator : public VisualComponent	// подкласс компонента, декорирует объект VisualComponent
 {
 public:
-	Decorator(VisualComponent*);
+	Decorator(VisualComponent * contents);
 	virtual void Draw();
 	virtual void Resize();
 	// ...
@@ -926,7 +926,7 @@ void Decorator::Resize()
 class BorderDecorator : public Decorator	// определяет специализированные операции
 {
 public:
-	BorderDecorator(VisualComponent*, int borderWidth);
+	BorderDecorator(VisualComponent * contents, int borderWidth);
 	virtual void Draw();
 private:
 	void DrawBorder(int);
@@ -940,7 +940,7 @@ void BorderDecorator::Draw()
 }
 /* Подклассы ScrollDecorator и DropShadowDecorator, которые добавят визуальному компоненту возможность прокрутки и оттенения, 
 реализуются аналогично. Теперь экземпляры этих классов можно скомпоновать для получения различных оформлений: */
-void Window::SetContents (VisualComponent* contents)		// поместить визуальный компонент в оконный объект
+void Window::SetContents (VisualComponent * contents) // поместить визуальный компонент в оконный объект
 {
 	// ...
 }
@@ -951,12 +951,27 @@ public:
 	
 }
 // Теперь можно создать поле для ввода текста и окно, в котором будет находиться это поле:
-Window* window = new Window;
-TextView* textView = new TextView;
+Window	 * window	= new Window;
+TextView * textView = new TextView;
 window->SetContents(textView);				// TextView является подклассом VisualComponent, значит, мы можно поместить его в окно
+
 // Но нам нужна поле ввода с рамкой и возможность прокрутки, поэтому перед размещением в окне его необходимо оформить:
-window->SetContents( new BorderDecorator(new ScrollDecorator(textView), 1) );
-/* 
+window->SetContents( new BorderDecorator( new ScrollDecorator(textView), 1 ) );
+/* Поскольку класс Window обращается к своему содержимому только через интерфейс VisualComponent, то ему неизвестно о присутствии 
+декоратора. Клиент при желании может сохранить ссылку на само поле ввода, если ему нужно работать с ним непосредственно — например, 
+вызывать операции, не входящие в интерфейс VisualComponent. Клиенты, которым важна идентичность объекта, также должны обращаться к 
+нему напрямую.
+ Поток является фундаментальной абстракцией для большинства средств ввода/вывода. Он может предоставлять интерфейс для преобразования 
+объектов в последовательность байтов или символов. Это позволяет записать объект в файл или буфер в памяти и впоследствии извлечь его 
+оттуда. Самый очевидный способ сделать это — определить абстрактный класс Stream с подклассами MemoryStream и FileStream. Предположим,
+однако, что вам также хотелось бы иметь возможность:
+• сжимать данные в потоке с применением различных алгоритмов (кодирование с переменной длиной строки, алгоритм Лемпеля — Зива и т. д.);
+• преобразовывать данные в 7-битные символы кода ASCII для передачи по каналу связи.
+ Паттерн декоратор позволяет весьма элегантно добавить такие обязанности потокам.
+Абстрактный класс Stream имеет внутренний буфер и предоставляет операции для помещения данных в поток (PutInt, PutString). Как 
+только буфер заполняется, Stream вызывает абстрактную операцию HandleBufferFull, которая выполняет реальное перемещение данных. 
+В классе FileStream эта операция замещается так, что буфер записывается в файл.
+
 • */""/* 
 • */""/* 
 • */""/* 
