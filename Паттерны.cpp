@@ -631,28 +631,30 @@ Context<MyStrategy> aContext;
 сжимаемости. Растягиваемость определяет, насколько возможно увеличивать объект по сравнению с его естественным размером, а 
 сжимаемость — насколько возможно этот размер уменьшать. Композиция передает эти значения компоновщику, который использует их, 
 чтобы найти оптимальное место для разбиения строки: */
-class Composition
+class Component{};
+class Composition				// Композиция
 {
 public:
-	Composition(Compositor*);
+	Composition(Compositor *);	// инициализируется компоновщиком, которым собираетесь пользоваться
 	void Repair();
+	void Traverse();
 private:
-	Compositor* _compositor;
-	Component * _components;	// список компонентов
-	int  _componentCount;		// количество компонентов
-	int  _lineWidth;			// ширина строки в композиции
-	int* _lineBreaks;			// позиции точек разбиения строки (измеренные в компонентах)
-	int  _lineCount;			// количество строк
+	Compositor * _compositor;	// агрегирование компоновщика
+	Component  * _components;	// список компонентов (коллекция экземпляров класса Component)
+	int   _componentCount;		// количество компонентов
+	int   _lineWidth;			// ширина строки в композиции
+	int * _lineBreaks;			// позиции точек разбиения строки (измеренные в компонентах)
+	int   _lineCount;			// количество строк
 };
 /* Когда возникает необходимость изменить расположение элементов, композиция запрашивает у компоновщика позиции точек 
 разбиения строк. При этом она передает компоновщику три массива, в которых содержатся естественные размеры, величины 
 растягиваемости и сжимаемости компонентов. Кроме того, передается число компонентов, ширина строки и массив, в который 
 компоновщик должен поместить позиции точек разрыва. Компоновщик возвращает число рассчитанных им точек разбиения.
 Интерфейс класса Compositor позволяет композиции передать компоновщику всю необходимую ему информацию: */
-class Compositor				// Абстрактный класс
+class Compositor				// Абстрактный класс (компоновщик)
 {
 public:
-	virtual int Compose(Coord natural[], Coord stretch[], Coord shrink[],
+	virtual int Compose(Coord natural[], Coord stretch[], Coord shrink[],		// метод компоновки
 						int componentCount, int lineWidth, int breaks[]) = 0;
 protected:
 	Compositor();
@@ -662,11 +664,11 @@ protected:
 позиций точек разбиения и, наконец, отображает документ. */
 void Composition::Repair()
 {
-	Coord* natural;
-	Coord* stretchability;
-	Coord* shrinkability;
-	int componentCount;
-	int* breaks;
+	Coord * natural;
+	Coord * stretchability;
+	Coord * shrinkability;
+	int 	componentCount;
+	int   * breaks;
 	// Подготовить массивы с желательными размерами компонентов
 	// ...
 	// Определить, где должны находиться точки разбиения:
@@ -675,9 +677,8 @@ void Composition::Repair()
 	// Разместить компоненты с учетом точек разбиения
 	// ...
 }
-/* Обратимся к подклассам класса Compositor. Класс SimpleCompositor для определения позиций точек разрыва анализирует компоненты 
-по одному: */
-class SimpleCompositor : public Compositor
+// Подкласс класса Compositor - SimpleCompositor определяет позиций точек разрыва анализирует компоненты по одному:
+class SimpleCompositor	: public Compositor
 {
 public:
 	SimpleCompositor();
@@ -686,7 +687,7 @@ public:
 };
 /* Класс TeXCompositor использует более глобальную стратегию: он рассматривает абзац целиком, принимая во внимание размеры и 
 растягиваемость компонентов. Данный класс также пытается минимизировать ширину пропусков между компонентами: */
-class TeXCompositor : public Compositor
+class TeXCompositor		: public Compositor
 {
 public:
 	TeXCompositor();
@@ -694,7 +695,7 @@ public:
 	// ...
 };
 // Класс ArrayCompositor разбивает компоненты на строки, оставляя между ними равные промежутки: 
-class ArrayCompositor : public Compositor
+class ArrayCompositor	: public Compositor
 {
 public:
 	ArrayCompositor(int interval);
@@ -906,7 +907,7 @@ public:
 	virtual void Resize();
 	// ...
 private:
-	VisualComponent * _component;			// указывает на базовый компонент
+	VisualComponent * _component;			// агрегирует базовый компонент
 };
 /* Объект класса Decorator декорирует объект VisualComponent, на который ссылается переменная экземпляра _component, 
 инициализируемая в конструкторе. Для каждой операции в интерфейсе VisualComponent в классе Decorator определена реализация 
@@ -919,9 +920,9 @@ void Decorator::Resize()
 {
 	_component->Resize();
 }
-/* Подклассы Decorator определяют специализированные операции. Например, класс BorderDecorator добавляет к своему внутреннему 
-компоненту рамку. BorderDecorator — это подкласс Decorator, где операция Draw замещена так, что рисует рамку. В этом классе 
-определена также закрытая вспомогательная операция DrawBorder, которая, собственно, и изображает рамку. Реализации всех остальных 
+/* Подклассы Decorator определяют специализированные операции: класс BorderDecorator добавляет к своему внутреннему компоненту 
+рамку. BorderDecorator — это подкласс Decorator, где операция Draw замещена так, что рисует рамку. В этом классе определена 
+также закрытая вспомогательная операция DrawBorder, которая, собственно, и изображает рамку. Реализации всех остальных 
 операций этот подкласс наследует от Decorator: */
 class BorderDecorator : public Decorator	// определяет специализированные операции
 {
@@ -935,27 +936,26 @@ private:
 };
 void BorderDecorator::Draw()
 {
-	Decorator::Draw();
+	Decorator::Draw();						// применяет операцию по умолчанию
 	DrawBorder(_width);						// добавляет к своему внутреннему компоненту рамку
 }
 /* Подклассы ScrollDecorator и DropShadowDecorator, которые добавят визуальному компоненту возможность прокрутки и оттенения, 
 реализуются аналогично. Теперь экземпляры этих классов можно скомпоновать для получения различных оформлений: */
-void Window::SetContents (VisualComponent * contents) // поместить визуальный компонент в оконный объект
+void Window::SetContents(VisualComponent * contents) // поместить визуальный компонент в оконный объект
 {
 	// ...
 }
 
 class TextView : public VisualComponent		// примитив компонента, декорирует объект VisualComponent
 {
-public:
-	
+	// ...
 }
 // Теперь можно создать поле для ввода текста и окно, в котором будет находиться это поле:
 Window	 * window	= new Window;
 TextView * textView = new TextView;
-window->SetContents(textView);				// TextView является подклассом VisualComponent, значит, мы можно поместить его в окно
+window->SetContents(textView);				// TextView является подклассом VisualComponent, значит можно поместить его в окно
 
-// Но нам нужна поле ввода с рамкой и возможность прокрутки, поэтому перед размещением в окне его необходимо оформить:
+// Но нам нужна и возможность прокрутки для поля ввода с рамкой, поэтому перед размещением в окне его необходимо оформить:
 window->SetContents( new BorderDecorator( new ScrollDecorator(textView), 1 ) );
 /* Поскольку класс Window обращается к своему содержимому только через интерфейс VisualComponent, то ему неизвестно о присутствии 
 декоратора. Клиент при желании может сохранить ссылку на само поле ввода, если ему нужно работать с ним непосредственно — например, 
@@ -967,10 +967,84 @@ window->SetContents( new BorderDecorator( new ScrollDecorator(textView), 1 ) );
 однако, что вам также хотелось бы иметь возможность:
 • сжимать данные в потоке с применением различных алгоритмов (кодирование с переменной длиной строки, алгоритм Лемпеля — Зива и т. д.);
 • преобразовывать данные в 7-битные символы кода ASCII для передачи по каналу связи.
- Паттерн декоратор позволяет весьма элегантно добавить такие обязанности потокам.
-Абстрактный класс Stream имеет внутренний буфер и предоставляет операции для помещения данных в поток (PutInt, PutString). Как 
-только буфер заполняется, Stream вызывает абстрактную операцию HandleBufferFull, которая выполняет реальное перемещение данных. 
-В классе FileStream эта операция замещается так, что буфер записывается в файл.
+ Паттерн декоратор позволяет весьма элегантно добавить такие обязанности потокам. */
+class Stream								// класс компонента
+{
+public:
+	Stream()
+	void putInt();
+	void putString();
+	virtual void handleBufferFull();
+};
+/* Абстрактный класс Stream имеет внутренний буфер и предоставляет операции для помещения данных в поток (PutInt, PutString). Как 
+только буфер заполняется, Stream вызывает абстрактную операцию HandleBufferFull, которая выполняет реальное перемещение данных. */
+class MemoryStream	  : public Stream		// примитив компонента, декорирует объект Stream
+{
+public:
+	void handleBufferFull();					// буфер записывается в файл
+}
+// В классе FileStream эта операция замещается так, что буфер записывается в файл:
+class FileStream	  : public Stream		// примитив компонента, декорирует объект Stream
+{
+public:
+	void handleBufferFull();					// буфер записывается во flash
+}
+// Ключевую роль здесь играет класс StreamDecorator: 
+class StreamDecorator : public Stream		// подкласс компонента, декорирует объект Stream
+{
+private:
+	Stream * _component;
+public:
+	virtual void handleBufferFull();			// буфер записывается во flash
+}
+StreamDecorator::handleBufferFull()
+{
+	_component->handleBufferFull();
+}
+/* Именно в нем хранится ссылка на тот поток-компонент, которому переадресуются все запросы. Подклассы StreamDecorator замещают операцию
+HandleBufferFull и выполняют дополнительные действия, перед тем как вызвать реализацию этой операции в классе StreamDecorator.
+Подкласс CompressingStream сжимает данные: */
+class CompressingStream	  : public StreamDecorator	// определяет специализированные операции
+{
+private:
+	Vector _data;
+	void compressingData(Vector d);
+public:
+	CompressingStream(Stream * contents, Vector data);
+	void handleBufferFull();	
+}
+CompressingStream::handleBufferFull()
+{
+	compressingData(_data);							// сжимает данные
+	StreamDecorator::handleBufferFull();				// применяет операцию по умолчанию
+}
+// А ASCII7Stream преобразует их в 7-битный код ASCII:
+class ASCII7Stream	  : public StreamDecorator		// определяет специализированные операции
+{
+private:
+	Vector _data;
+	void dataToASCII7(Vector s);
+public:
+	ASCII7Stream(Stream * contents, Vector data);
+	void handleBufferFull();	
+}
+ASCII7Stream::handleBufferFull()
+{
+	dataToASCII7(data);								// преобразует данные в 7-битный код ASCII
+	StreamDecorator::handleBufferFull();				// применяет операцию по умолчанию
+}
+/* Теперь, для того чтобы создать объект FileStream, который одновременно сжимает данные и преобразует результат в 7-битный код,
+достаточно просто декорировать FileStream с использованием CompressingStream и ASCII7Stream: */
+Stream * aStream = new CompressingStream( new ASCII7Stream( new FileStream("aFileName") ) );
+aStream->PutInt(12);
+aStream->PutString("aString");
+/* Родственные паттерны
+ Адаптер: декоратор изменяет только обязанности объекта, не меняя интерфейса, а адаптер придает объекту совершенно новый интерфейс.
+ Компоновщик: декоратор можно считать вырожденным случаем составного объекта, у которого есть только один компонент. Однако декоратор
+добавляет новые обязанности, агрегирование объектов не является его целью.
+ Стратегия: декоратор позволяет изменить внешний облик объекта, стратегия — его внутреннее содержание. Это два взаимодополняющих 
+способа изменения объекта.
+
 
 • */""/* 
 • */""/* 
